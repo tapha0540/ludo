@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="starGradSel" cx="35%" cy="25%" r="70%">
+      <stop offset="0%" stop-color="#fffde7"/>
+      <stop offset="50%" stop-color="#ffeb3b"/>
+      <stop offset="100%" stop-color="#fbc02d"/>
+    </radialGradient>
+  </defs>
+  <!-- Halo -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#ffeb3b" stroke-width="6" stroke-opacity="0.6"/>
+  
+  <!-- Étoile -->
+  <polygon points="32,4 39,24 60,24 42,38 48,58 32,46 16,58 22,38 4,24 25,24"
+    fill="url(#starGradSel)" stroke="#b8860b" stroke-width="2"/>
+</svg>

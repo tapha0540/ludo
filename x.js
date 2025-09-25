@@ -1,0 +1,10 @@
+
+un pion tue un autre pionn si
+ - leurs coordonnées x, y sont egaux
+ - si couleurEquipe sont différents 
+ - Leur case surquel ils sont n'est une case d'exception
+ 
+- si un joueur joue est que tous ses pions sauf un n'ont pas dépasser la case de départ
+ donc choisi ce pion par défaut
+ 
+case omé = chemin.length - indexCaseDepart - 
