@@ -305,12 +305,18 @@ class JeuLudo {
   }
 }
 const jeuLudo = new JeuLudo();
-for (let i = 0; i < 4; i++) {
-  const pionVert = jeuLudo.grille.equipes[0][i];
-  pionVert.positionIndex = i;
-  pionVert.coordonnees = jeuLudo.grille.cheminsArrivee[0][pionVert.positionIndex];
-  pionVert.aDepasseCaseDepart = true;
-  pionVert.aDepasseCaseArrivee = true;
-}
+// for (let j = 0; j < 2; j++) {
+//   const equipe = jeuLudo.grille.equipes[j];
+//   for (let i = 0; i < 4 ;i++) {
+//     const pion = equipe[i];
+//     pion.positionIndex = jeuLudo.grille.cheminArriveeLength - 1;
+//     pion.coordonnees = jeuLudo.grille.cheminsArrivee[j][pion.positionIndex];
+//     pion.aDepasseCaseDepart = true;
+//     pion.aDepasseCaseArrivee = true;
+//     pion.aFiniJeu = true;
+//     jeuLudo.equipeAFiniJeu();
+//   }
+//   jeuLudo.tour++;
+// }
 
 jeuLudo.run();
