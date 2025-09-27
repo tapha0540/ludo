@@ -1,8 +1,12 @@
 class Pion {
+  // la position du pion sur le chemin ou sur le chemin final
   positionIndex = -1;
-  depasseCaseDepart = false;
-  status = "normal";
-
+  // indique si le pion a dépassé le carré de depart de son equipe ou non
+  aDepasseCaseDepart = false;
+  // indique si le pion a dépasser la case d'arrivée
+  aDepasseCaseArrivee = false;
+  
+  aFiniJeu = false;
   /**
    * @param { {x: number, y: number} } coordonnees
    * @type {string} couleurEquipe
@@ -28,10 +32,5 @@ class Pion {
     );
     ctx.fill();
     ctx.stroke();
-  }
-  avancer(cheminLength) {
-    this.positionIndex++;
-    // Si le pion dépasse le dernier élément de la variable chemin on réinitialise sa valeur de nouveau à zero.
-    if (this.positionIndex >= cheminLength) this.positionIndex = 0;
   }
 }

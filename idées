@@ -7,4 +7,4 @@ un pion tue un autre pionn si
 - si un joueur joue est que tous ses pions sauf un n'ont pas dépasser la case de départ
  donc choisi ce pion par défaut
  
-case omé = chemin.length - indexCaseDepart - 
+case omé = chemin.length - indexCaseDepart - 3

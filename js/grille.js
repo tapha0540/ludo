@@ -1,6 +1,8 @@
 class LudoGrille {
+  // nombre de colonnes et de lignes du grille
   colonnes = 15;
   lignes = 15;
+  // coté de chaque carré du grille
   box = canvas.height / 15;
   nombreEquipes = 4;
   nombrePions = 4;
@@ -9,7 +11,12 @@ class LudoGrille {
    */
   equipes = [];
   couleurEquipes = ["green", "red", "yellow", "blue"];
-  dice = new Dice({ x: 6, y: 6, size: 3 }, this.couleurEquipes, this.nombreEquipes);
+  dice = new Dice(
+    { x: 6, y: 6, size: 3 },
+    this.couleurEquipes,
+    this.nombreEquipes
+  );
+  // les coordonnées des pions au lancement du jeu
   coordonneesPionsParDefaut = [
     [
       { x: 2, y: 2 },
@@ -36,7 +43,10 @@ class LudoGrille {
       { x: 13, y: 13 },
     ],
   ];
-  IndexCaseDepart = [0, 13, 40, 27];
+  // l'index des carrés surquels les pions de chaque équipe commence à parcourir le chemin du grille.
+  indexCaseDepart = [0, 13, 40, 27];
+  indexCasesArrivee = [51, 11, 38, 24];
+  // les coordonnées sur lesquelles on desssine les cases de chaque equipe et leurs tailles.
   cases = [
     // vert
     {
@@ -66,12 +76,13 @@ class LudoGrille {
   // les carrés protégés sont les carrés sur lesquels un pion ne peut pas être capturé.
   carresProteges = [
     // les cases de départ sont aussi protégés
-    ...this.IndexCaseDepart,
+    ...this.indexCaseDepart,
     48,
     8,
     21,
     35,
   ];
+
   constructor() {
     this.reinitialiserJeu();
 
@@ -84,7 +95,7 @@ class LudoGrille {
       "data:image/svg+xml;base64," + btoa(etoileStrokeBlackSvgText);
   }
 
-  dessine(tourTermine) {
+  dessine(tourTermine, tour) {
     for (let i = 0; i < this.nombreEquipes; i++) {
       const { ligne } = this.cases[i];
       this.dessineLigne(this.couleurEquipes[i], ligne);
@@ -99,11 +110,11 @@ class LudoGrille {
         grandCarre,
         petitCarre,
         // carre de depart de l'equipe
-        this.chemin[this.IndexCaseDepart[i]]
+        this.chemin[this.indexCaseDepart[i]]
       );
     }
 
-    this.dice.dessinerDice(this.box, tourTermine);
+    this.dice.dessinerDice(this.box, tourTermine, tour);
     this.dessinerEtoiles();
     this.dessinerPions();
   }
@@ -208,222 +219,99 @@ class LudoGrille {
       }
     }
   }
+  cheminsArrivee = [
+    [
+      { x: 1, y: 7 },
+      { x: 2, y: 7 },
+      { x: 3, y: 7 },
+      { x: 4, y: 7 },
+      { x: 5, y: 7 },
+      { x: 6, y: 7 },
+    ],
+    [
+      { x: 7, y: 1 },
+      { x: 7, y: 2 },
+      { x: 7, y: 3 },
+      { x: 7, y: 4 },
+      { x: 7, y: 5 },
+      { x: 7, y: 6 },
+    ],
+    [
+      { x: 7, y: 13 },
+      { x: 7, y: 12 },
+      { x: 7, y: 11 },
+      { x: 7, y: 10 },
+      { x: 7, y: 9 },
+      { x: 7, y: 8 },
+    ],
+    [
+      { x: 13, y: 7 },
+      { x: 12, y: 7 },
+      { x: 11, y: 7 },
+      { x: 10, y: 7 },
+      { x: 9, y: 7 },
+      { x: 8, y: 7 },
+    ],
+  ];
+  cheminArriveeLength = this.cheminsArrivee[0].length;
   chemin = [
     // case vert
-    {
-      x: 1,
-      y: 6,
-    },
-    {
-      x: 2,
-      y: 6,
-    },
-    {
-      x: 3,
-      y: 6,
-    },
-    {
-      x: 4,
-      y: 6,
-    },
-    {
-      x: 5,
-      y: 6,
-    },
+    { x: 1, y: 6 },
+    { x: 2, y: 6 },
+    { x: 3, y: 6 },
+    { x: 4, y: 6 },
+    { x: 5, y: 6 },
     // case rouge
-    {
-      x: 6,
-      y: 5,
-    },
-    {
-      x: 6,
-      y: 4,
-    },
-    {
-      x: 6,
-      y: 3,
-    },
-    {
-      x: 6,
-      y: 2,
-    },
-    {
-      x: 6,
-      y: 1,
-    },
-    {
-      x: 6,
-      y: 0,
-    },
-    {
-      x: 7,
-      y: 0,
-    },
-    {
-      x: 8,
-      y: 0,
-    },
-    {
-      x: 8,
-      y: 1,
-    },
-    {
-      x: 8,
-      y: 2,
-    },
-    {
-      x: 8,
-      y: 3,
-    },
-    {
-      x: 8,
-      y: 4,
-    },
-    {
-      x: 8,
-      y: 5,
-    },
+    { x: 6, y: 5 },
+    { x: 6, y: 4 },
+    { x: 6, y: 3 },
+    { x: 6, y: 2 },
+    { x: 6, y: 1 },
+    { x: 6, y: 0 },
+    { x: 7, y: 0 },
+    { x: 8, y: 0 },
+    { x: 8, y: 1 },
+    { x: 8, y: 2 },
+    { x: 8, y: 3 },
+    { x: 8, y: 4 },
+    { x: 8, y: 5 },
     // case bleu
-    {
-      x: 9,
-      y: 6,
-    },
-    {
-      x: 10,
-      y: 6,
-    },
-    {
-      x: 11,
-      y: 6,
-    },
-    {
-      x: 12,
-      y: 6,
-    },
-    {
-      x: 13,
-      y: 6,
-    },
-    {
-      x: 14,
-      y: 6,
-    },
-    {
-      x: 14,
-      y: 7,
-    },
-    {
-      x: 14,
-      y: 8,
-    },
-    {
-      x: 14,
-      y: 8,
-    },
-    {
-      x: 13,
-      y: 8,
-    },
-    {
-      x: 12,
-      y: 8,
-    },
-    {
-      x: 11,
-      y: 8,
-    },
-    {
-      x: 10,
-      y: 8,
-    },
-    {
-      x: 9,
-      y: 8,
-    },
+    { x: 9, y: 6 },
+    { x: 10, y: 6 },
+    { x: 11, y: 6 },
+    { x: 12, y: 6 },
+    { x: 13, y: 6 },
+    { x: 14, y: 6 },
+    { x: 14, y: 7 },
+    { x: 14, y: 8 },
+    { x: 14, y: 8 },
+    { x: 13, y: 8 },
+    { x: 12, y: 8 },
+    { x: 11, y: 8 },
+    { x: 10, y: 8 },
+    { x: 9, y: 8 },
     // case jaune
-    {
-      x: 8,
-      y: 9,
-    },
-    {
-      x: 8,
-      y: 10,
-    },
-    {
-      x: 8,
-      y: 11,
-    },
-    {
-      x: 8,
-      y: 12,
-    },
-    {
-      x: 8,
-      y: 13,
-    },
-    {
-      x: 8,
-      y: 14,
-    },
-    {
-      x: 7,
-      y: 14,
-    },
-    {
-      x: 6,
-      y: 14,
-    },
-    {
-      x: 6,
-      y: 13,
-    },
-    {
-      x: 6,
-      y: 12,
-    },
-    {
-      x: 6,
-      y: 11,
-    },
-    {
-      x: 6,
-      y: 10,
-    },
-    {
-      x: 6,
-      y: 9,
-    },
-    {
-      x: 5,
-      y: 8,
-    },
-    {
-      x: 4,
-      y: 8,
-    },
-    {
-      x: 3,
-      y: 8,
-    },
-    {
-      x: 2,
-      y: 8,
-    },
-    {
-      x: 1,
-      y: 8,
-    },
-    {
-      x: 0,
-      y: 8,
-    },
-    {
-      x: 0,
-      y: 7,
-    },
-    {
-      x: 0,
-      y: 6,
-    },
+    { x: 8, y: 9 },
+    { x: 8, y: 10 },
+    { x: 8, y: 11 },
+    { x: 8, y: 12 },
+    { x: 8, y: 13 },
+    { x: 8, y: 14 },
+    { x: 7, y: 14 },
+    { x: 6, y: 14 },
+    { x: 6, y: 13 },
+    { x: 6, y: 12 },
+    { x: 6, y: 11 },
+    { x: 6, y: 10 },
+    { x: 6, y: 9 },
+    { x: 5, y: 8 },
+    { x: 4, y: 8 },
+    { x: 3, y: 8 },
+    { x: 2, y: 8 },
+    { x: 1, y: 8 },
+    { x: 0, y: 8 },
+    { x: 0, y: 7 },
+    { x: 0, y: 6 },
   ];
+  cheminLength = this.chemin.length;
 }
