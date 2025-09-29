@@ -7,8 +7,21 @@ class JeuLudo {
   toursEquipesFiniJeu = [];
   pionACapture = false;
   pionAfiniJeu = false;
+  /**  @type  {HTMLAudioElement} */
+  sonDeplacementPion = document.getElementById("son-pion-deplacement");
+  /**  @type  {HTMLAudioElement} */
+  sonPionCapture = document.getElementById("son-pion-capture");
+  /** @type {HTMLAudioElement*/
+  sonPionFiniJeu = document.getElementById("son-pion-fini-jeu");
   constructor() {
     this.grille = new LudoGrille();
+    for (let son of [
+      this.sonDeplacementPion,
+      this.sonPionCapture,
+      this.sonPionFiniJeu,
+    ]) {
+      son.volume = 1;
+    }
   }
   incrementerTour() {
     do {
@@ -29,11 +42,8 @@ class JeuLudo {
         this.eventPrécédentEnCours = false;
       }, this.dureeTour + 50);
       if (this.tourTermine) {
-        /**
-         *
-         * @param {Pion} pionClique
-         */
         if (this.carreEstClique(e, this.grille.dice.carre)) {
+          this.grille.dice.emettreSon();
           this.grille.dice.nombreAleatoire();
           // tour commencer
           this.tourTermine = false;
@@ -60,7 +70,6 @@ class JeuLudo {
           }
         }
       }
-
       this.redessine();
     });
     // resize grille
@@ -73,6 +82,7 @@ class JeuLudo {
   redessine() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     this.grille.dessine(this.tourTermine, this.tour);
+    this.redessinePionsEquipeJouant();
   }
   /**
    * @param {PointerEvent} e
@@ -95,9 +105,7 @@ class JeuLudo {
       y <= carre.y + carre.size
     );
   }
-  /**
-   * @param {Pion} pionClique
-   */
+  /** @param {Pion} pionClique */
   jouerTour(pionClique) {
     if (pionClique.aDepasseCaseDepart) {
       // si le pion selection a dépassé de case de départ
@@ -105,7 +113,6 @@ class JeuLudo {
       const interval = setInterval(() => {
         if (!pionClique.aDepasseCaseArrivee) {
           if (this.pionAfiniChemin(pionClique)) {
-            console.log("ce pion a fini le chemin");
             pionClique.positionIndex = 0;
             pionClique.aDepasseCaseArrivee = true;
             pionClique.coordonnees =
@@ -122,8 +129,8 @@ class JeuLudo {
           pionClique.positionIndex++;
           pionClique.coordonnees =
             this.grille.cheminsArrivee[this.tour][pionClique.positionIndex];
-          console.log("chemin arrivee");
         }
+        this.sonDeplacementPion.play();
         this.redessine();
         i++;
         if (i >= this.grille.dice.n) {
@@ -133,6 +140,7 @@ class JeuLudo {
             pionClique.aDepasseCaseArrivee &&
             pionClique.positionIndex === this.grille.cheminArriveeLength - 1
           ) {
+            this.sonPionFiniJeu.play();
             pionClique.aFiniJeu = true;
             this.pionAfiniJeu = true;
             this.equipeAFiniJeu();
@@ -206,7 +214,6 @@ class JeuLudo {
     return -1;
   }
   /**
-   *
    * @param {Pion} pionsEquipeJouant
    * @returns {Pion}
    */
@@ -269,10 +276,10 @@ class JeuLudo {
 
         if (estSurMemeCase && !estSurCarreProtege) {
           this.pionACapture = true;
+          this.sonPionCapture.play();
           // On renvoie le pion à sa position par défaut
           const { x, y } = this.grille.coordonneesPionsParDefaut[i][j];
           const rayon = this.grille.box / 2;
-
           pion.coordonnees = {
             x: x - rayon / this.grille.box,
             y: y - rayon / this.grille.box,
@@ -284,23 +291,16 @@ class JeuLudo {
   }
   terminerTour() {
     this.tourTermine = true;
-
     const doitPasChangerJoueur =
       this.grille.dice.n === 6 || this.pionACapture || this.pionAfiniJeu;
-
     if (!doitPasChangerJoueur) {
       this.incrementerTour();
     }
-
     // reset des drapeaux pour le prochain tour
     this.pionACapture = false;
     this.pionAfiniJeu = false;
   }
-
-  /**
-   *
-   * @param {Pion} pionClique
-   */
+  /**@param {Pion} pionClique*/
   pionAfiniChemin(pionClique) {
     // index case final d'un pion =  = chemin.length - indexCaseDepart du pion - 3
     const indexCarreArrivee = this.grille.indexCasesArrivee[this.tour];
@@ -316,12 +316,16 @@ class JeuLudo {
       this.toursEquipesFiniJeu.push(this.tour);
     }
   }
+  redessinePionsEquipeJouant() {
+    const equipeJouant = this.grille.equipes[this.tour];
+    equipeJouant.forEach((pion) => pion.dessinerPion(this.grille.box));
+  }
 }
 const jeuLudo = new JeuLudo();
 for (const [i, equipe] of jeuLudo.grille.equipes.entries()) {
-  for (const [j, pion] of equipe.entries()) {
+  for (const pion of equipe) {
     pion.aDepasseCaseDepart = true;
-    pion.positionIndex = jeuLudo.grille.indexCaseDepart[i]
+    pion.positionIndex = jeuLudo.grille.indexCaseDepart[i];
     pion.coordonnees = jeuLudo.grille.chemin[pion.positionIndex];
   }
 }

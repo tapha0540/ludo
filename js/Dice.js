@@ -1,20 +1,28 @@
 class Dice {
-  n = null;
+  n = 1;
+  /**
+   * @type {HTMLAudioElement}
+   */
+  sonDiceRolling = document.getElementById('son-dice-rolling');
   /**
    * @param { {x: number, y: number, size: number} } carre
    * @param {string} couleurEquipe
    */
+  
   constructor(carre, couleurEquipes, nombreEquipes) {
     this.carre = carre;
     this.couleurEquipes = couleurEquipes;
     this.nombreEquipes = nombreEquipes;
-    this.nombreAleatoire();
+    this.sonDiceRolling.volume = 1;
   }
   /**
    *
    * @param {number} box
    * @param {boolean} tourTermine
    */
+  emettreSon() {
+    this.sonDiceRolling.play();
+  }
   dessinerDice(box, tourTermine, tour) {
     const img = new Image();
     const couleurEquipeJouant = this.couleurEquipes[tour];
