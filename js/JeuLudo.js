@@ -5,6 +5,8 @@ class JeuLudo {
   dureeTour = 600;
   tour = 0;
   toursEquipesFiniJeu = [];
+  pionACapture = false;
+  pionAfiniJeu = false;
   constructor() {
     this.grille = new LudoGrille();
   }
@@ -132,6 +134,7 @@ class JeuLudo {
             pionClique.positionIndex === this.grille.cheminArriveeLength - 1
           ) {
             pionClique.aFiniJeu = true;
+            this.pionAfiniJeu = true;
             this.equipeAFiniJeu();
           }
           this.terminerTour();
@@ -139,7 +142,7 @@ class JeuLudo {
         }
       }, this.dureeTour / 6);
     } else {
-      /* s'il n'a pas dépasser la case de départ et que le joueur a eu 6
+      /* s'il n'a pas dépasser la case de départ ni case d'arrivée et que le joueur a eu 6
        le pion pourra maintenant sortir et se positionner à la case de départ de son
        équipe.
        */
@@ -265,6 +268,7 @@ class JeuLudo {
         );
 
         if (estSurMemeCase && !estSurCarreProtege) {
+          this.pionACapture = true;
           // On renvoie le pion à sa position par défaut
           const { x, y } = this.grille.coordonneesPionsParDefaut[i][j];
           const rayon = this.grille.box / 2;
@@ -280,10 +284,19 @@ class JeuLudo {
   }
   terminerTour() {
     this.tourTermine = true;
-    if (this.grille.dice.n !== 6) {
+
+    const doitPasChangerJoueur =
+      this.grille.dice.n === 6 || this.pionACapture || this.pionAfiniJeu;
+
+    if (!doitPasChangerJoueur) {
       this.incrementerTour();
     }
+
+    // reset des drapeaux pour le prochain tour
+    this.pionACapture = false;
+    this.pionAfiniJeu = false;
   }
+
   /**
    *
    * @param {Pion} pionClique
@@ -305,18 +318,11 @@ class JeuLudo {
   }
 }
 const jeuLudo = new JeuLudo();
-// for (let j = 0; j < 2; j++) {
-//   const equipe = jeuLudo.grille.equipes[j];
-//   for (let i = 0; i < 4 ;i++) {
-//     const pion = equipe[i];
-//     pion.positionIndex = jeuLudo.grille.cheminArriveeLength - 1;
-//     pion.coordonnees = jeuLudo.grille.cheminsArrivee[j][pion.positionIndex];
-//     pion.aDepasseCaseDepart = true;
-//     pion.aDepasseCaseArrivee = true;
-//     pion.aFiniJeu = true;
-//     jeuLudo.equipeAFiniJeu();
-//   }
-//   jeuLudo.tour++;
-// }
-
+for (const [i, equipe] of jeuLudo.grille.equipes.entries()) {
+  for (const [j, pion] of equipe.entries()) {
+    pion.aDepasseCaseDepart = true;
+    pion.positionIndex = jeuLudo.grille.indexCaseDepart[i]
+    pion.coordonnees = jeuLudo.grille.chemin[pion.positionIndex];
+  }
+}
 jeuLudo.run();
