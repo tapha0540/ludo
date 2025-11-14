@@ -11,7 +11,7 @@ class JeuLudo {
   sonDeplacementPion = document.getElementById("son-pion-deplacement");
   /**  @type  {HTMLAudioElement} */
   sonPionCapture = document.getElementById("son-pion-capture");
-  /** @type {HTMLAudioElement*/
+  /** @type {HTMLAudioElement} */
   sonPionFiniJeu = document.getElementById("son-pion-fini-jeu");
   constructor() {
     this.grille = new LudoGrille();
@@ -77,6 +77,13 @@ class JeuLudo {
       resizeCanvas();
       this.grille.box = canvas.height / 15;
       this.redessine();
+    });
+    window.addEventListener("unload", (e) => {
+      e.preventDefault();
+      this.sauvegarderJeu();
+    });
+    window.addEventListener("load", () => {
+      this.restaurerJeu();
     });
   }
   redessine() {
@@ -185,7 +192,7 @@ class JeuLudo {
     if (
       this.grille.dice.n !== 6 &&
       pionsEquipeJouant.every(
-        (pion) => !pion.aDepasseCaseDepart || pion.aFiniJeu
+        (pion) => !pion.aDepasseCaseDepart || pion.aFiniJeu,
       )
     ) {
       this.terminerTour();
@@ -271,7 +278,7 @@ class JeuLudo {
               pion.coordonnees.x === this.grille.chemin[indexCarre].x &&
               pion.coordonnees.y === this.grille.chemin[indexCarre].y
             );
-          }
+          },
         );
 
         if (estSurMemeCase && !estSurCarreProtege) {
@@ -320,13 +327,35 @@ class JeuLudo {
     const equipeJouant = this.grille.equipes[this.tour];
     equipeJouant.forEach((pion) => pion.dessinerPion(this.grille.box));
   }
-}
-const jeuLudo = new JeuLudo();
-for (const [i, equipe] of jeuLudo.grille.equipes.entries()) {
-  for (const pion of equipe) {
-    pion.aDepasseCaseDepart = true;
-    pion.positionIndex = jeuLudo.grille.indexCaseDepart[i];
-    pion.coordonnees = jeuLudo.grille.chemin[pion.positionIndex];
+  sauvegarderJeu() {
+    const equipes = this.grille.equipes;
+    const tour = this.tour;
+    localStorage.setItem("equipes", JSON.stringify(equipes));
+    localStorage.setItem("tour", tour);
+  }
+  restaurerJeu() {
+    const equipes = localStorage.getItem("equipes");
+    const tour = localStorage.getItem("tour");
+    if (equipes) {
+      this.grille.equipes = Array.from(JSON.parse(equipes)).map((equipe) => {
+        return equipe.map((pion) => {
+          let newPion = new Pion();
+          newPion.rayon = pion.rayon;
+          newPion.aFiniJeu = pion.aFiniJeu;
+          newPion.coordonnees = pion.coordonnees;
+          newPion.couleurEquipe = pion.couleurEquipe;
+          newPion.positionIndex = pion.positionIndex;
+          newPion.aDepasseCaseDepart = pion.aDepasseCaseDepart;
+          newPion.aDepasseCaseArrivee = pion.aDepasseCaseArrivee;
+          return newPion;
+        });
+      });
+    }
+    if (tour) {
+      this.tour = Number(tour);
+    }
+    return equipes !== null && tour !== null;
   }
 }
+const jeuLudo = new JeuLudo();
 jeuLudo.run();
